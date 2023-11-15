@@ -12,6 +12,8 @@ services:
       GF_SERVER_DOMAIN: localhost
     ports:
       - '192.168.1.45:3000:3000'
+        #volumes:
+        #- ./grafanadata:/var/lib/grafana
     networks:
       - grafana
     deploy:
@@ -36,7 +38,7 @@ services:
     restart: unless-stopped
     volumes:
       #- ./promtail.yaml:/etc/promtail/promtail.yaml:ro
-      - ./config.yml:/etc/promtail/config.yml:ro
+      - ./promtaildata/config.yml:/etc/promtail/config.yml:ro
       - ./geoip-enrichment/log/syslog.log:/var/log/syslog/syslog.log:ro
       - ./GeoIPLite/GeoLite2-City_20231107/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb:ro
     command: 
