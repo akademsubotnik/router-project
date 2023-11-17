@@ -12,8 +12,9 @@ services:
       GF_SERVER_DOMAIN: localhost
     ports:
       - '192.168.1.45:3000:3000'
-        #volumes:
-        #- ./grafanadata:/var/lib/grafana
+    user: '0'
+    volumes:
+      - grafanadata:/var/lib/grafana
     networks:
       - grafana
     deploy:
@@ -65,7 +66,8 @@ services:
   #  ports:
   #    - 514:514/tcp
   #  restart: unless-stopped
-
+volumes:
+  grafanadata: {}
 
 networks:
   grafana: {}

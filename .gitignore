@@ -1,1 +1,3 @@
- geoip-enrichment/log/syslog.log
+geoip-enrichment/log/syslog.log
+geoip-enrichment/secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+geoip-enrichment/secrets/GEOIPUPDATE_LICENSE_KEY.txt
