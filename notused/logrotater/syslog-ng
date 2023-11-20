@@ -1,0 +1,11 @@
+/var/log/syslog/syslog.log
+{
+        rotate 1
+	notifempty
+	missingok
+	compress
+	sharedscripts
+	postrotate
+                syslog-ng-ctl reload --control=/config/syslog-ng.ctl
+	endscript
+}

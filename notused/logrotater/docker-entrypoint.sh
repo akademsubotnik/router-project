@@ -8,7 +8,9 @@
 
 execute_script () {
 	apk update
+	apk add logrotate
 	crontab /root/root
+	chown root:root /etc/logrotate.d/syslog-ng
 }
 
 addpath () {
