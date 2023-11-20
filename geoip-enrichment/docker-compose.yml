@@ -3,9 +3,6 @@ services:
 
   syslog:
     image: lscr.io/linuxserver/syslog-ng:latest
-      #entrypoint: 
-      #- /bin/docker-entrypoint.sh
-        #- /bin/logrotater.sh
     container_name: syslog
     hostname: syslog
     restart: unless-stopped
@@ -16,17 +13,9 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      #- ./config/logrotater/init:/init
       - ./config:/config
       - ./log:/var/log #optional
       - geoip:/usr/share/GeoIP
-        #- ./config/logrotater/docker-entrypoint.sh:/bin/docker-entrypoint.sh
-        #- ./config/logrotater/logrotater.sh:/bin/logrotater.sh
-        #- ./config/logrotater/root:/root/root
-        #- ./config/logrotater/syslog-ng:/etc/logrotate.d/syslog-ng
-        #- ./config/logrotater/syslogrotater.log:/etc/logrotate.d/syslog/syslogrotater.log
-        #command:
-        #- logrotater.sh
     ports:
       - 514:514/tcp
     depends_on:
