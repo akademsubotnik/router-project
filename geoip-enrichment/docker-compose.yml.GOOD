@@ -13,10 +13,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      #- ./syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
       - ./config:/config
       - ./log:/var/log #optional
-        #- /var/log/iptables.log:/var/log/iptables.log:ro
       - geoip:/usr/share/GeoIP
     ports:
       - 514:514/tcp
@@ -34,13 +32,24 @@ services:
     container_name: geoip
     restart: on-failure
     environment:
-      GEOIPUPDATE_ACCOUNT_ID: 935974
-      GEOIPUPDATE_LICENSE_KEY: 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
+      GEOIPUPDATE_ACCOUNT_ID: /run/secrets/g_a_id
+      GEOIPUPDATE_LICENSE_KEY: /run/secrets/g_l_id
       GEOIPUPDATE_EDITION_IDS: GeoLite2-City
+    secrets:
+      - g_a_id
+      - g_l_id
     volumes:
       - geoip:/usr/share/GeoIP
     deploy:
       replicas: 1
+
+
+secrets:
+  g_a_id:
+    file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+  g_l_id:
+    file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
+
 
 volumes:
   geoip: {}
