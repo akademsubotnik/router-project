@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
 
   grafana:
@@ -45,22 +45,32 @@ services:
       - promtail
     deploy:
       replicas: 1
-      
-
-  geoip:
-    image: maxmindinc/geoipupdate
+  
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate
+    restart: unless-stopped
     environment:
-      GEOIPUPDATE_ACCOUNT_ID: 935974
-      GEOIPUPDATE_LICENSE_KEY: 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
-      GEOIPUPDATE_EDITION_IDS: GeoLite2-City
+      - 'GEOIPUPDATE_ACCOUNT_ID_FILE=/run/secrets/GEOIPUPDATE_ACCOUNT_ID'
+      - 'GEOIPUPDATE_LICENSE_KEY_FILE=/run/secrets/GEOIPUPDATE_LICENSE_KEY'
+      - 'GEOIPUPDATE_EDITION_IDS=GeoLite2-City'
     volumes:
-      - geoip:/usr/share/GeoIP
+      - geoipupdate_data:/usr/share/GeoIP
+    secrets:
+      - GEOIPUPDATE_ACCOUNT_ID
+      - GEOIPUPDATE_LICENSE_KEY
     deploy:
       replicas: 1
 
+secrets:
+  GEOIPUPDATE_ACCOUNT_ID:
+    file: ./geoip-enrichment/secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+  GEOIPUPDATE_LICENSE_KEY:
+    file: ./geoip-enrichment/secrets/GEOIPUPDATE_LICENSE_KEY.txt
+
 volumes:
-  geoip: {}
   grafanadata: {}
+  geoipupdate_data: {}
+
 
 networks:
   grafana: {}

@@ -1,59 +1,31 @@
 version: "3"
 services:
-
-  syslog:
-    image: lscr.io/linuxserver/syslog-ng:latest
-    container_name: syslog
-    hostname: syslog
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate
     restart: unless-stopped
-      #command:
-      #- '--no-caps'
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - ./config:/config
-      - ./log:/var/log #optional
-      - geoip:/usr/share/GeoIP
-    ports:
-      - 514:514/tcp
-    depends_on:
-      - geoip
-      #geoip:
-      #  condition: service_completed_successfully
+      - 'GEOIPUPDATE_ACCOUNT_ID_FILE=/run/secrets/GEOIPUPDATE_ACCOUNT_ID'
+      - 'GEOIPUPDATE_LICENSE_KEY_FILE=/run/secrets/GEOIPUPDATE_LICENSE_KEY'
+      - 'GEOIPUPDATE_EDITION_IDS=GeoLite2-City'
     networks:
-      - promtail
-    deploy:
-      replicas: 1
-
-  geoip:
-    image: maxmindinc/geoipupdate
-    container_name: geoip
-    restart: on-failure
-    environment:
-      GEOIPUPDATE_ACCOUNT_ID: /run/secrets/g_a_id
-      GEOIPUPDATE_LICENSE_KEY: /run/secrets/g_l_id
-      GEOIPUPDATE_EDITION_IDS: GeoLite2-City
-    secrets:
-      - g_a_id
-      - g_l_id
+      - geoipupdate
     volumes:
-      - geoip:/usr/share/GeoIP
+      - geoipupdate_data:/usr/share/GeoIP
+    secrets:
+      - GEOIPUPDATE_ACCOUNT_ID
+      - GEOIPUPDATE_LICENSE_KEY
     deploy:
       replicas: 1
-
-
-secrets:
-  g_a_id:
-    file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
-  g_l_id:
-    file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
-
-
-volumes:
-  geoip: {}
 
 networks:
-  promtail:
-     external: true
+  geoipupdate:
+
+secrets:
+  GEOIPUPDATE_ACCOUNT_ID:
+    file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+  GEOIPUPDATE_LICENSE_KEY:
+    file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
+
+volumes:
+  geoipupdate_data:
+    driver: local 
