@@ -4,7 +4,6 @@ services:
   grafana:
     image: grafana/grafana:9.2.3
     hostname: grafana
-      #restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -22,7 +21,6 @@ services:
   loki:
     image: grafana/loki:2.9.1
     hostname: loki
-      #restart: unless-stopped
       #log.level: debug
     networks:
       - loki
@@ -33,11 +31,9 @@ services:
   promtail:
     image: grafana/promtail:2.9.1
     hostname: promtail
-      #restart: unless-stopped
     volumes:
       - ./promtaildata/config.yml:/etc/promtail/config.yml:ro
-      - ./geoip-enrichment/log/syslog/syslog.log:/var/log/syslog/syslog.log:ro
-      - ./geoip-enrichment/GeoIPLite/GeoLite2-City_20231107/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb:ro
+      - ./GeoIPLite/GeoLite2-City_20231107/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb:ro
     command: 
       - '-config.file=/etc/promtail/config.yml'
     networks:
@@ -63,9 +59,9 @@ services:
 
 secrets:
   GEOIPUPDATE_ACCOUNT_ID:
-    file: ./geoip-enrichment/secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+    file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
   GEOIPUPDATE_LICENSE_KEY:
-    file: ./geoip-enrichment/secrets/GEOIPUPDATE_LICENSE_KEY.txt
+    file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
 
 volumes:
   grafanadata: {}

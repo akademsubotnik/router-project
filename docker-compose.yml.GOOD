@@ -1,17 +1,15 @@
-version: "3"
+version: "3.9"
 services:
 
   grafana:
     image: grafana/grafana:9.2.3
     hostname: grafana
-    container_name: grafana
-    restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_SERVER_DOMAIN: localhost
     ports:
-      - '192.168.1.45:3000:3000'
+      - '0.0.0.0:3000:3000'
     user: '0'
     volumes:
       - ./grafanadata:/var/lib/grafana
@@ -23,8 +21,6 @@ services:
   loki:
     image: grafana/loki:2.9.1
     hostname: loki
-    container_name: loki
-    restart: unless-stopped
       #log.level: debug
     networks:
       - loki
@@ -35,12 +31,9 @@ services:
   promtail:
     image: grafana/promtail:2.9.1
     hostname: promtail
-    container_name: promtail
-    restart: unless-stopped
     volumes:
       - ./promtaildata/config.yml:/etc/promtail/config.yml:ro
-      - ./geoip-enrichment/log/syslog/syslog.log:/var/log/syslog/syslog.log:ro
-      - ./geoip-enrichment/GeoIPLite/GeoLite2-City_20231107/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb:ro
+      - ./GeoIPLite/GeoLite2-City_20231107/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb:ro
     command: 
       - '-config.file=/etc/promtail/config.yml'
     networks:
@@ -48,9 +41,32 @@ services:
       - promtail
     deploy:
       replicas: 1
-        
+  
+  geoipupdate:
+    image: ghcr.io/maxmind/geoipupdate
+    restart: unless-stopped
+    environment:
+      - 'GEOIPUPDATE_ACCOUNT_ID_FILE=/run/secrets/GEOIPUPDATE_ACCOUNT_ID'
+      - 'GEOIPUPDATE_LICENSE_KEY_FILE=/run/secrets/GEOIPUPDATE_LICENSE_KEY'
+      - 'GEOIPUPDATE_EDITION_IDS=GeoLite2-City'
+    volumes:
+      - geoipupdate_data:/usr/share/GeoIP
+    secrets:
+      - GEOIPUPDATE_ACCOUNT_ID
+      - GEOIPUPDATE_LICENSE_KEY
+    deploy:
+      replicas: 1
+
+secrets:
+  GEOIPUPDATE_ACCOUNT_ID:
+    file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
+  GEOIPUPDATE_LICENSE_KEY:
+    file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
+
 volumes:
   grafanadata: {}
+  geoipupdate_data: {}
+
 
 networks:
   grafana: {}
