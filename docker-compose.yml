@@ -4,14 +4,13 @@ services:
   grafana:
     image: grafana/grafana:9.2.3
     hostname: grafana
-    container_name: grafana
-    restart: unless-stopped
+      #restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_SERVER_DOMAIN: localhost
     ports:
-      - '192.168.1.45:3000:3000'
+      - '0.0.0.0:3000:3000'
     user: '0'
     volumes:
       - ./grafanadata:/var/lib/grafana
@@ -23,8 +22,7 @@ services:
   loki:
     image: grafana/loki:2.9.1
     hostname: loki
-    container_name: loki
-    restart: unless-stopped
+      #restart: unless-stopped
       #log.level: debug
     networks:
       - loki
@@ -35,8 +33,7 @@ services:
   promtail:
     image: grafana/promtail:2.9.1
     hostname: promtail
-    container_name: promtail
-    restart: unless-stopped
+      #restart: unless-stopped
     volumes:
       - ./promtaildata/config.yml:/etc/promtail/config.yml:ro
       - ./geoip-enrichment/log/syslog/syslog.log:/var/log/syslog/syslog.log:ro
@@ -48,8 +45,21 @@ services:
       - promtail
     deploy:
       replicas: 1
-        
+      
+
+  geoip:
+    image: maxmindinc/geoipupdate
+    environment:
+      GEOIPUPDATE_ACCOUNT_ID: 935974
+      GEOIPUPDATE_LICENSE_KEY: 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
+      GEOIPUPDATE_EDITION_IDS: GeoLite2-City
+    volumes:
+      - geoip:/usr/share/GeoIP
+    deploy:
+      replicas: 1
+
 volumes:
+  geoip: {}
   grafanadata: {}
 
 networks:
