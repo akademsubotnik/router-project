@@ -1,6 +1,6 @@
-server:
-  http_listen_port: 9080
-  grpc_listen_port: 0
+#server:
+#  http_listen_port: 9080
+#  grpc_listen_port: 0
 #  log_level: debug
 
 positions:
@@ -11,10 +11,12 @@ clients:
 
 scrape_configs:
 - job_name: iptables
-  syslog:
-    listen_address: 0.0.0.0:514
-    labels:
+  static_configs:
+  - targets:
+    - localhost
+  - labels:
       job: iptables
+      __path__: /var/log/syslog/syslog.log
   pipeline_stages:
       - logfmt:
           mapping:
