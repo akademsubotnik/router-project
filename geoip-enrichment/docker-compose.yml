@@ -6,8 +6,6 @@ services:
     container_name: syslog
     hostname: syslog
     restart: unless-stopped
-      #command:
-      #- '--no-caps'
     environment:
       - PUID=1000
       - PGID=1000
@@ -20,8 +18,6 @@ services:
       - 514:514/tcp
     depends_on:
       - geoip
-      #geoip:
-      #  condition: service_completed_successfully
     networks:
       - promtail
     deploy:
@@ -32,12 +28,12 @@ services:
     container_name: geoip
     restart: on-failure
     environment:
-      GEOIPUPDATE_ACCOUNT_ID: /run/secrets/g_a_id
-      GEOIPUPDATE_LICENSE_KEY: /run/secrets/g_l_id
-      GEOIPUPDATE_EDITION_IDS: GeoLite2-City
+      - 'GEOIPUPDATE_ACCOUNT_ID_FILE=/run/secrets/gad'
+      - 'GEOIPUPDATE_LICENSE_KEY_FILE=/run/secrets/gid'
+      - 'GEOIPUPDATE_EDITION_IDS=GeoLite2-City'
     secrets:
-      - g_a_id
-      - g_l_id
+      - gad
+      - gid
     volumes:
       - geoip:/usr/share/GeoIP
     deploy:
@@ -45,9 +41,9 @@ services:
 
 
 secrets:
-  g_a_id:
+  gad:
     file: ./secrets/GEOIPUPDATE_ACCOUNT_ID.txt
-  g_l_id:
+  gid:
     file: ./secrets/GEOIPUPDATE_LICENSE_KEY.txt
 
 
