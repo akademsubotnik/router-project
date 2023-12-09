@@ -1,6 +1,11 @@
+
+
 TODO:
 IT WOULD BE NICE TO HAVE A LIST OF IPS WITH LOCATION INFORMATION IN A TABLE IN GRAFANA DASHBOARD ALSO
 
+*
+*
+*
 
 This project collects network traffic logs from your router with ulogd and then forwards them onto a syslog-ng service running on a server on your LAN.
 Promtail + GeoIP plugin read the syslog-ng log file and display on Grafana where the IPs are from.
